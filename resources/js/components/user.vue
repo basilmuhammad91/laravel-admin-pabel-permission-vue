@@ -7,7 +7,7 @@
         <div class="card-tools">
             <ul class="nav nav-pills ml-auto">
                 <li class="nav-item mr-1">
-                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-plus-circle"></i> Add New</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#createUser"><i class="fas fa-plus-circle"></i> Add New</button>
                 </li>
                 <li class="nav-item">
                     <div class="input-group mt-0 input-group-sm" style="width: 350px;">
@@ -40,7 +40,7 @@
             <tr v-for="user in users" :key="user.id">
               <td>{{user.id}}</td>
               <td>{{user.name}}</td>
-              <td></td>
+              <td>{{user.role}}</td>
               <td>{{user.email}}</td>
               <td>{{user.created_at | date}}</td>
               <td>
@@ -55,92 +55,97 @@
       </div>
 
       <!-- Create Modal Start -->
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Create User</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+      <div class="modal fade" id="createUser" tabindex="-1" aria-labelledby="createUserLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="createUserLabel">Create User</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form @submit.prevent="createUser()">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label> Name </label>
+                            <input v-model="form.name" type="text" name="name" placeholder="Name"
+                                class="form-control" :class="{'is-invaild': form.errors.has('name')}">
+                            <has-error :form="form" field="name"></has-error>
+                        </div>
+
+                        <div class="form-group">
+                            <label> Email </label>
+                            <input v-model="form.email" type="text" name="email" placeholder="Email"
+                                class="form-control" :class="{'is-invaild': form.errors.has('email')}">
+                            <has-error :form="form" field="email"></has-error>
+                        </div>
+
+                        <div class="form-group">
+                            <label> Phone Number </label>
+                            <input v-model="form.phone" type="text" name="phone" placeholder="Phone Number"
+                                class="form-control" :class="{'is-invaild': form.errors.has('phone')}">
+                            <has-error :form="form" field="phone"></has-error>
+                        </div>
+
+                        <div class="form-group">
+                            <label> Choose Role </label>
+                            <b-form-select
+                                v-model="form.role"
+                                :options="roles"
+                                text-field="name"
+                                value-field="id"
+
+                            ></b-form-select>
+                            <has-error :form="form" field="role"></has-error>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label> Password </label>
+                            <input v-model="form.password" type="password" name="password" placeholder="Password"
+                                class="form-control" :class="{'is-invaild': form.errors.has('password')}">
+                            <has-error :form="form" field="password"></has-error>
+                        </div>
+
+                        <b-form-group label="Assign Permissions">
+                            <b-form-checkbox
+                                v-for="option in permissions"
+                                v-model="form.permissions"
+                                :key="option.name"
+                                :value="option.name"
+                                name="flavour-3a"
+                            >
+                                {{ option.name }}
+                            </b-form-checkbox>
+                        </b-form-group>
+
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                       <!--  <button type="button"  class="btn btn-lg btn-danger" data-dismiss="modal">Close</button>
+                        <b-button variant="primary" v-if="!load" class="btn-lg" disabled>
+                            <b-spinner small type="grow"></b-spinner>
+                            {{  action }}
+                        </b-button> -->
+                        <!-- <button type="submit" v-if="load" v-show="!editMode" class="btn btn-lg btn-primary">Save User</button>
+                        <button type="submit" v-if="load" v-show="editMode" class="btn btn-lg btn-success">Update User</button> -->
+                       
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
+                        <b-button variant="primary" v-if="!load" disabled>
+                          <b-spinner small type="grow"></b-spinner>
+                          Creating Account...
+                        </b-button>
+                        <button type="submit" v-if="load" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+      <!--       <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div> -->
+          </div>
+        </div>
       </div>
-      <div class="modal-body">
-          <form @submit.prevent="createUser()">
-              <div class="modal-body">
-                  <div class="form-group">
-                      <label> Name </label>
-                      <input v-model="form.name" type="text" name="name" placeholder="Name"
-                          class="form-control" :class="{'is-invaild': form.errors.has('name')}">
-                      <has-error :form="form" field="name"></has-error>
-                  </div>
-
-                  <div class="form-group">
-                      <label> Email </label>
-                      <input v-model="form.email" type="text" name="email" placeholder="Email"
-                          class="form-control" :class="{'is-invaild': form.errors.has('email')}">
-                      <has-error :form="form" field="email"></has-error>
-                  </div>
-
-                  <div class="form-group">
-                      <label> Phone Number </label>
-                      <input v-model="form.phone" type="text" name="phone" placeholder="Phone Number"
-                          class="form-control" :class="{'is-invaild': form.errors.has('phone')}">
-                      <has-error :form="form" field="phone"></has-error>
-                  </div>
-
-                  <div class="form-group">
-                      <label> Choose Role </label>
-                      <b-form-select
-                          v-model="form.role"
-                          :options="roles"
-                          text-field="name"
-                          value-field="id"
-
-                      ></b-form-select>
-                      <has-error :form="form" field="role"></has-error>
-
-                  </div>
-
-                  <div class="form-group">
-                      <label> Password </label>
-                      <input v-model="form.password" type="password" name="password" placeholder="Password"
-                          class="form-control" :class="{'is-invaild': form.errors.has('password')}">
-                      <has-error :form="form" field="password"></has-error>
-                  </div>
-
-                  <b-form-group label="Assign Permissions">
-                      <b-form-checkbox
-                          v-for="option in permissions"
-                          v-model="form.permissions"
-                          :key="option.name"
-                          :value="option.name"
-                          name="flavour-3a"
-                      >
-                          {{ option.name }}
-                      </b-form-checkbox>
-                  </b-form-group>
-
-              </div>
-              <div class="modal-footer justify-content-between">
-                 <!--  <button type="button"  class="btn btn-lg btn-danger" data-dismiss="modal">Close</button>
-                  <b-button variant="primary" v-if="!load" class="btn-lg" disabled>
-                      <b-spinner small type="grow"></b-spinner>
-                      {{  action }}
-                  </b-button> -->
-                  <!-- <button type="submit" v-if="load" v-show="!editMode" class="btn btn-lg btn-primary">Save User</button>
-                  <button type="submit" v-if="load" v-show="editMode" class="btn btn-lg btn-success">Update User</button> -->
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-primary">Save changes</button>
-              </div>
-          </form>
-      </div>
-<!--       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div> -->
-    </div>
-  </div>
-</div>
       <!-- End of Create Modal -->
 
       <!-- /.card-body -->
@@ -153,6 +158,7 @@
   export default{
     data(){
       return {
+        load: true,
         users: [],
         permissions: [],
         roles: [],
@@ -205,14 +211,21 @@
         });
       },
       createUser(){
+        this.load = false;
         this.form.post('http://localhost/laravel/admin/public/account/create')
         .then((response)=>{
+          this.load = true;
+          Fire.$emit('loadUser');
+          $('#createUser').modal('hide');
           swal.fire({
               icon: 'success',
               title: 'Account Created',
               text: 'Your account has been created successfully',
-            })
+            });
+          this.form.reset();
+          // window.location = 'http://localhost/laravel/admin/public/user';
         }).catch((e)=>{
+          this.load = true;
           swal.fire({
               icon: 'error',
               title: 'Oops...',
@@ -226,6 +239,9 @@
       this.getUsers();
       this.getRoles();
       this.getPermissions();
+      Fire.$on('loadUser', () => {
+        this.getUsers;
+      })
     }
   }
 

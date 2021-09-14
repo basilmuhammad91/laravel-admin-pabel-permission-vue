@@ -55,11 +55,11 @@ class UserController extends Controller
         $user = new User();
         $user->name = $request->name;
         $user->phone = $request->phone;
-        $user->password = $request->password;
+        $user->password = bcrypt($request->password);
         $user->email = $request->email;
         $user->assignRole($request->role);
 
-        if($request->has($request->permissions))
+        if($request->has("permissions"))
         {
             $user->givePermissionTo($request->permissions);
         }
@@ -144,6 +144,12 @@ class UserController extends Controller
     public function getAllUsers()
     {
         $users = User::latest()->get();
+        
+        $users->transform(function($user){
+            $user->role = $user->getRoleNames()->first();
+            return $user;
+        });
+
         return response()->json([
             'users' => $users
         ], 200);
