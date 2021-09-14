@@ -23,8 +23,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = $this->user::all();
-        return view('user.index', ['users' => $users]);
+        return view('user.index');
     }
 
     /**
@@ -45,7 +44,30 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // $this->validate($request, [
+        //     "name" => "required|string",
+        //     "phone" => "required",
+        //     "password" => "required|alpha_num|min:6",
+        //     "role" => "required",
+        //     "email" => "required|email|unique:users"
+        // ]);
+
+        $user = new User();
+        $user->name = $request->name;
+        $user->phone = $request->phone;
+        $user->password = $request->password;
+        $user->email = $request->email;
+        $user->assignRole($request->role);
+
+        if($request->has($request->permissions))
+        {
+            $user->givePermissionTo($request->permissions);
+        }
+
+        $user->save();
+
+        return response()->json("User Created", 200);
+
     }
 
     /**
@@ -117,6 +139,14 @@ class UserController extends Controller
             ;
         }
 
+    }
+
+    public function getAllUsers()
+    {
+        $users = User::latest()->get();
+        return response()->json([
+            'users' => $users
+        ], 200);
     }
 
 }

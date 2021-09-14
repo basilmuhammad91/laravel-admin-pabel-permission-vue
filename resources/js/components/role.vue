@@ -8,17 +8,17 @@
 
             </div>
 
-            <b-form-group label="Assign Permissions">
-                <b-form-checkbox
-                    v-for="option in permissions"
-					v-model="form.permissions"
-                    :key="option.name"
-                    :value="option.name"
-                    name="flavour-3a"
-                >
-                    {{ option.name }}
-                </b-form-checkbox>
-            </b-form-group>
+               <b-form-group label="Assign Permissions">
+                      <b-form-checkbox
+                          v-for="option in permissions"
+                          v-model="form.permissions"
+                          :key="option.name"
+                          :value="option.name"
+                          name="flavour-3a"
+                      >
+                          {{ option.name }}
+                      </b-form-checkbox>
+                  </b-form-group>
 
 
 
@@ -48,7 +48,7 @@ export default{
 	},
 
 	methods: {
-		getPermission(){
+		getPermissions(){
 			axios.get('http://localhost/laravel/admin/public/getAllPermission')
 			.then((response)=>{
 				this.permissions = response.data.permissions
@@ -87,7 +87,7 @@ export default{
 	},
 
 	created(){
-		this.getPermission();
+		this.getPermissions();
 	}
 }
 

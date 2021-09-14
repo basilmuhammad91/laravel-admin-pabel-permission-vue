@@ -31,3 +31,7 @@ Route::post('/profile', 'UserController@post_profile')->name('user.postprofile')
 // =======axios request========
 Route::get('getAllPermission', 'PermissionController@getAllPermission');
 Route::post('postRole', 'RoleController@store');
+Route::get('getAllUsers', 'UserController@getAllUsers');
+Route::get('getAllRoles', 'RoleController@getAllRoles');
+
+Route::post('account/create', 'UserController@store');

@@ -3,8 +3,22 @@
       <div class="card-header">
         <h3 class="card-title">User Table</h3>
 
+
         <div class="card-tools">
-          <a href="" class="btn btn-primary">Create New User</a>
+            <ul class="nav nav-pills ml-auto">
+                <li class="nav-item mr-1">
+                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-plus-circle"></i> Add New</button>
+                </li>
+                <li class="nav-item">
+                    <div class="input-group mt-0 input-group-sm" style="width: 350px;">
+                        <input type="text" name="table_search" v-model="searchWord" class="form-control float-right" placeholder="Search by name, email">
+
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-default" ><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
         </div>
       </div>
       <!-- /.card-header -->
@@ -17,25 +31,202 @@
               <th>Name</th>
               <th>Role</th>
               <th>Email</th>
-              <th>Action</th>
               <th>Date Posted</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             
-            <tr>
+            <tr v-for="user in users" :key="user.id">
+              <td>{{user.id}}</td>
+              <td>{{user.name}}</td>
               <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>{{user.email}}</td>
+              <td>{{user.created_at | date}}</td>
+              <td>
+                <button class="btn btn-sm btn-info" @click="viewUser(user)"> <i class="fa fa-eye"></i> View</button>
+                <button class="btn btn-sm btn-warning" @click="editUser(user)" > <i class="fa fa-edit"></i> Edit</button>
+                <button class="btn btn-sm btn-danger" @click="deleteUser(user)"> <i class="fa fa-trash"></i> Delete </button>
+              </td>
             </tr>
             
           </tbody>
         </table>
       </div>
+
+      <!-- Create Modal Start -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Create User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form @submit.prevent="createUser()">
+              <div class="modal-body">
+                  <div class="form-group">
+                      <label> Name </label>
+                      <input v-model="form.name" type="text" name="name" placeholder="Name"
+                          class="form-control" :class="{'is-invaild': form.errors.has('name')}">
+                      <has-error :form="form" field="name"></has-error>
+                  </div>
+
+                  <div class="form-group">
+                      <label> Email </label>
+                      <input v-model="form.email" type="text" name="email" placeholder="Email"
+                          class="form-control" :class="{'is-invaild': form.errors.has('email')}">
+                      <has-error :form="form" field="email"></has-error>
+                  </div>
+
+                  <div class="form-group">
+                      <label> Phone Number </label>
+                      <input v-model="form.phone" type="text" name="phone" placeholder="Phone Number"
+                          class="form-control" :class="{'is-invaild': form.errors.has('phone')}">
+                      <has-error :form="form" field="phone"></has-error>
+                  </div>
+
+                  <div class="form-group">
+                      <label> Choose Role </label>
+                      <b-form-select
+                          v-model="form.role"
+                          :options="roles"
+                          text-field="name"
+                          value-field="id"
+
+                      ></b-form-select>
+                      <has-error :form="form" field="role"></has-error>
+
+                  </div>
+
+                  <div class="form-group">
+                      <label> Password </label>
+                      <input v-model="form.password" type="password" name="password" placeholder="Password"
+                          class="form-control" :class="{'is-invaild': form.errors.has('password')}">
+                      <has-error :form="form" field="password"></has-error>
+                  </div>
+
+                  <b-form-group label="Assign Permissions">
+                      <b-form-checkbox
+                          v-for="option in permissions"
+                          v-model="form.permissions"
+                          :key="option.name"
+                          :value="option.name"
+                          name="flavour-3a"
+                      >
+                          {{ option.name }}
+                      </b-form-checkbox>
+                  </b-form-group>
+
+              </div>
+              <div class="modal-footer justify-content-between">
+                 <!--  <button type="button"  class="btn btn-lg btn-danger" data-dismiss="modal">Close</button>
+                  <b-button variant="primary" v-if="!load" class="btn-lg" disabled>
+                      <b-spinner small type="grow"></b-spinner>
+                      {{  action }}
+                  </b-button> -->
+                  <!-- <button type="submit" v-if="load" v-show="!editMode" class="btn btn-lg btn-primary">Save User</button>
+                  <button type="submit" v-if="load" v-show="editMode" class="btn btn-lg btn-success">Update User</button> -->
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Save changes</button>
+              </div>
+          </form>
+      </div>
+<!--       <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+      <!-- End of Create Modal -->
+
       <!-- /.card-body -->
     </div>
 
 </template>
+
+<script type="text/javascript">
+  
+  export default{
+    data(){
+      return {
+        users: [],
+        permissions: [],
+        roles: [],
+        form: new Form({
+          'name': '',
+          'phone': '',
+          'password': '',
+          'email': '',
+          'permissions': [],
+          'role': 1,
+        })
+      }
+    },
+
+    methods: {
+      getUsers(){
+        axios.get('http://localhost/laravel/admin/public/getAllUsers')
+        .then((response)=>{
+          this.users = response.data.users
+        }).catch((e)=>{
+          swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: e,
+          })
+        })
+      },
+      getRoles(){
+        axios.get('http://localhost/laravel/admin/public/getAllRoles')
+        .then((response)=>{
+          this.roles = response.data.roles
+        }).catch((e)=>{
+          swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: e,
+          })
+        })
+      },
+      getPermissions(){
+        axios.get('http://localhost/laravel/admin/public/getAllPermission')
+        .then((response)=>{
+          this.permissions = response.data.permissions
+        }).catch((e)=>{
+            swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: e,
+            })
+        });
+      },
+      createUser(){
+        this.form.post('http://localhost/laravel/admin/public/account/create')
+        .then((response)=>{
+          swal.fire({
+              icon: 'success',
+              title: 'Account Created',
+              text: 'Your account has been created successfully',
+            })
+        }).catch((e)=>{
+          swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: e,
+            })
+        })
+      }
+    },
+    created()
+    {
+      this.getUsers();
+      this.getRoles();
+      this.getPermissions();
+    }
+  }
+
+</script>

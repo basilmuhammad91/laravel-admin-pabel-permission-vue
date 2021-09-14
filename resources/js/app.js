@@ -31,7 +31,11 @@ const Toast = Swal.mixin({
 });
 
 window.toast = Toast;
+import moment from 'moment';
 
+Vue.filter('date', function(created){
+  return moment(created).format('MMMM Do YYYY, h:mm:ss a');;
+});
 
 // import { Form, HasError, AlertError } from 'vform'
 // window.Form = Form;

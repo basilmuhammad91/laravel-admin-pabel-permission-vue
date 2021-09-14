@@ -104,4 +104,12 @@ class RoleController extends Controller
     {
         //
     }
+
+    public function getAllRoles()
+    {
+        $roles = Role::latest()->get();
+        return response()->json([
+            'roles' => $roles
+        ], 200);
+    }
 }
