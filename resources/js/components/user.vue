@@ -53,6 +53,25 @@
           </tbody>
         </table>
       </div>
+      <loading :loading="loading"></loading>
+      <!-- View Modal Start -->
+      <div class="modal fade" id="viewUser" tabindex="-1" aria-labelledby="viewUserLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <p><b>Name: </b>{{user.name}}</p>
+                  <p><b>Email: </b>{{user.email}}</p>
+                  <p><b>Last Updated: </b>{{user.updated_at | date}}</p>
+                  <p><b>Date Posted: </b>{{user.created_at | date}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End of View Modal -->
 
       <!-- Create Modal Start -->
       <div class="modal fade" id="createUser" tabindex="-1" aria-labelledby="createUserLabel" aria-hidden="true">
@@ -122,14 +141,6 @@
 
                     </div>
                     <div class="modal-footer justify-content-between">
-                       <!--  <button type="button"  class="btn btn-lg btn-danger" data-dismiss="modal">Close</button>
-                        <b-button variant="primary" v-if="!load" class="btn-lg" disabled>
-                            <b-spinner small type="grow"></b-spinner>
-                            {{  action }}
-                        </b-button> -->
-                        <!-- <button type="submit" v-if="load" v-show="!editMode" class="btn btn-lg btn-primary">Save User</button>
-                        <button type="submit" v-if="load" v-show="editMode" class="btn btn-lg btn-success">Update User</button> -->
-                       
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
                         <b-button variant="primary" v-if="!load" disabled>
                           <b-spinner small type="grow"></b-spinner>
@@ -139,10 +150,6 @@
                     </div>
                 </form>
             </div>
-      <!--       <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
-            </div> -->
           </div>
         </div>
       </div>
@@ -158,7 +165,9 @@
   export default{
     data(){
       return {
+        loading: false,
         load: true,
+        user: [],
         users: [],
         permissions: [],
         roles: [],
@@ -175,15 +184,18 @@
 
     methods: {
       getUsers(){
+        this.loading = true;
         axios.get('http://localhost/laravel/admin/public/getAllUsers')
-        .then((response)=>{
+        .then((response)=>{   
+          this.loading = false;
           this.users = response.data.users
         }).catch((e)=>{
           swal.fire({
             icon: 'error',
             title: 'Oops...',
             text: e,
-          })
+          });
+          this.loading = false;
         })
       },
       getRoles(){
@@ -232,7 +244,11 @@
               text: e,
             })
         })
-      }
+      },
+      viewUser(user){
+        $('#viewUser').modal('show');
+        this.user = user;
+      },
     },
     created()
     {
