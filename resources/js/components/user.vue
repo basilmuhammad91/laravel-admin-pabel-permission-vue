@@ -7,7 +7,7 @@
         <div class="card-tools">
             <ul class="nav nav-pills ml-auto">
                 <li class="nav-item mr-1">
-                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#createUser"><i class="fas fa-plus-circle"></i> Add New</button>
+                    <button type="button" class="btn btn-sm btn-primary" @click="createMode()"><i class="fas fa-plus-circle"></i> Add New</button>
                 </li>
                 <li class="nav-item">
                     <div class="input-group mt-0 input-group-sm" style="width: 350px;">
@@ -23,6 +23,7 @@
       </div>
       <!-- /.card-header -->
 
+      <!-- Table to show user records  -->
       <div class="card-body table-responsive p-0">
         <table class="table table-hover text-nowrap">
           <thead>
@@ -53,6 +54,7 @@
           </tbody>
         </table>
       </div>
+      <!-- End of User Table -->
       <loading :loading="loading"></loading>
       <!-- View Modal Start -->
       <div class="modal fade" id="viewUser" tabindex="-1" aria-labelledby="viewUserLabel" aria-hidden="true">
@@ -78,13 +80,14 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="createUserLabel">Create User</h5>
+              <h5 class="modal-title" id="createUserLabel" v-show="!editMode">Create User</h5>
+              <h5 class="modal-title" id="createUserLabel" v-show="editMode">Edit User</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
-                <form @submit.prevent="createUser()">
+                <form @submit.prevent="updateUser()">
                     <div class="modal-body">
                         <div class="form-group">
                             <label> Name </label>
@@ -144,9 +147,10 @@
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
                         <b-button variant="primary" v-if="!load" disabled>
                           <b-spinner small type="grow"></b-spinner>
-                          Creating Account...
+                          {{ action }}
                         </b-button>
-                        <button type="submit" v-if="load" class="btn btn-primary">Save changes</button>
+                        <button type="submit" v-if="load" class="btn btn-primary" v-show="!editMode">Save</button>
+                        <button type="submit" v-if="load" class="btn btn-primary" v-show="editMode">Update</button>
                     </div>
                 </form>
             </div>
@@ -165,6 +169,8 @@
   export default{
     data(){
       return {
+        action: '',
+        editMode: false,
         loading: false,
         load: true,
         user: [],
@@ -183,6 +189,20 @@
     },
 
     methods: {
+      // Mode to check whether it is creating or updating
+      createMode(){
+        this.editMode = false;
+        $('#createUser').modal('show');
+      },
+      // function will run when user click on edit button
+      editUser(user){
+        this.editMode = true;
+        this.form.reset();
+        this.form.fill(user);
+        this.form.role = user.roles[0].id;
+        $('#createUser').modal('show');
+      },
+      // Get all the users to show in table
       getUsers(){
         this.loading = true;
         axios.get('http://localhost/laravel/admin/public/getAllUsers')
@@ -198,6 +218,7 @@
           this.loading = false;
         })
       },
+      // Get roles to show in dropdown
       getRoles(){
         axios.get('http://localhost/laravel/admin/public/getAllRoles')
         .then((response)=>{
@@ -210,6 +231,7 @@
           })
         })
       },
+      // Get permissions to show in checboxes
       getPermissions(){
         axios.get('http://localhost/laravel/admin/public/getAllPermission')
         .then((response)=>{
@@ -222,7 +244,9 @@
             })
         });
       },
+      // Function will call on submit button to save the record into database
       createUser(){
+        this.action = 'Creating User...';
         this.load = false;
         this.form.post('http://localhost/laravel/admin/public/account/create')
         .then((response)=>{
