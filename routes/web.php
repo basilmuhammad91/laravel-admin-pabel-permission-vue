@@ -35,3 +35,5 @@ Route::get('getAllUsers', 'UserController@getAllUsers');
 Route::get('getAllRoles', 'RoleController@getAllRoles');
 
 Route::post('account/create', 'UserController@store');
+Route::put('account/update/{id}', 'UserController@update');
+

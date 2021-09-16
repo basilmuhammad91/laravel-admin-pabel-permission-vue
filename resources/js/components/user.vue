@@ -87,7 +87,7 @@
               </button>
             </div>
             <div class="modal-body">
-                <form @submit.prevent="updateUser()">
+                <form @submit.prevent="!editMode ? createUser() : updateUser()">
                     <div class="modal-body">
                         <div class="form-group">
                             <label> Name </label>
@@ -178,6 +178,7 @@
         permissions: [],
         roles: [],
         form: new Form({
+          'id': '',
           'name': '',
           'phone': '',
           'password': '',
@@ -200,6 +201,7 @@
         this.form.reset();
         this.form.fill(user);
         this.form.role = user.roles[0].id;
+        this.form.permissions = user.userPermissions;
         $('#createUser').modal('show');
       },
       // Get all the users to show in table
@@ -269,10 +271,39 @@
             })
         })
       },
+      
+      // Update the user
+      updateUser(){
+        this.action = 'Updating User...';
+        this.load = false;
+        this.form.put('http://localhost/laravel/admin/public/account/update/'+this.form.id)
+        .then((response)=>{
+          this.load = true;
+          Fire.$emit('loadUser');
+          $('#createUser').modal('hide');
+          swal.fire({
+              icon: 'success',
+              title: 'User Updated',
+              text: 'Your account has been updated successfully',
+            });
+          this.form.reset();
+          // window.location = 'http://localhost/laravel/admin/public/user';
+        }).catch((e)=>{
+          this.load = true;
+          swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: e,
+            })
+        })
+      },
+
+      // Function will call on clicking the view button
       viewUser(user){
         $('#viewUser').modal('show');
         this.user = user;
       },
+
     },
     created()
     {

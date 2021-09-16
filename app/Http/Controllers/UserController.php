@@ -101,7 +101,52 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // $this->validate($request, [
+        //     'name' => 'required|string',
+        //     'phone' => 'required',
+        //     'password' => 'nullable|alpha_num|min:6',
+        //     'role' => 'required',
+        //     'email' => 'required|email|unique:users,email,'.$id
+        // ]);
+
+        $user = User::findOrFail($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+
+        if($request->has('password'))
+        {
+            $user->password = bcrypt($request->password);
+        }
+
+        if($request->has('role'))
+        {
+            $userRole = $user->getRoleNames();
+            foreach($userRole as $role)
+            {
+                $user->removeRole($role);
+            }
+
+            $user->assignRole($request->role);
+        }
+
+        if($request->has('permissions'))
+        {
+            $userPermissions = $user->getPermissionNames();
+            foreach ($userPermissions as $permission)
+            {
+                $user->revokePermissionTo($request->permissions);
+            }
+
+            $user->givePermissionTo($request->permissions);
+        }
+
+
+        $user->save();
+        return response()->json([
+            "User Updated", 200
+        ]);
+
     }
 
     /**
@@ -147,6 +192,7 @@ class UserController extends Controller
         
         $users->transform(function($user){
             $user->role = $user->getRoleNames()->first();
+            $user->userPermissions = $user->getPermissionNames();
             return $user;
         });
 
