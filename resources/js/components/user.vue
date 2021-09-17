@@ -192,6 +192,7 @@
     methods: {
       // Mode to check whether it is creating or updating
       createMode(){
+        this.form.reset();
         this.editMode = false;
         $('#createUser').modal('show');
       },
@@ -287,7 +288,7 @@
               text: 'Your account has been updated successfully',
             });
           this.form.reset();
-          // window.location = 'http://localhost/laravel/admin/public/user';
+          window.location = 'http://localhost/laravel/admin/public/user';
         }).catch((e)=>{
           this.load = true;
           swal.fire({

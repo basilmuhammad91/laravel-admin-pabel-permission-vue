@@ -135,12 +135,12 @@ class UserController extends Controller
             $userPermissions = $user->getPermissionNames();
             foreach ($userPermissions as $permission)
             {
-                $user->revokePermissionTo($request->permissions);
+                $user->revokePermissionTo($permission);
             }
 
-            $user->givePermissionTo($request->permissions);
+            
         }
-
+        $user->givePermissionTo($request->permissions);
 
         $user->save();
         return response()->json([
@@ -199,6 +199,27 @@ class UserController extends Controller
         return response()->json([
             'users' => $users
         ], 200);
+    }
+
+    public function change_password()
+    {
+        return view('profile.password');
+    }
+
+    public function change_password_post(Request $request)
+    {
+        $this->validate($request, [
+            'password' => 'required',
+            'confirm' => 'required'
+        ]);
+
+        $user = Auth()->user();
+        $user->update([
+            'password' => bcrypt($request->password),
+        ]);
+        return response()->json([
+            "Password Changed", 100
+        ]);
     }
 
 }

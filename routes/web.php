@@ -28,6 +28,9 @@ Route::resource('role','RoleController');
 Route::get('/profile', 'UserController@profile')->name('user.profile');
 Route::post('/profile', 'UserController@post_profile')->name('user.postprofile');
 
+Route::get('/password', 'UserController@change_password')->name('user.change_password');
+Route::post('/password/post', 'UserController@change_password_post');
+
 // =======axios request========
 Route::get('getAllPermission', 'PermissionController@getAllPermission');
 Route::post('postRole', 'RoleController@store');

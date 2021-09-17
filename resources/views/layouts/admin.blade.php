@@ -109,18 +109,22 @@
               </p>
             </a>
             <ul class="nav nav-treeview" style="display: none;">
+              @can('Hamza')
               <li class="nav-item">
                 <a href="{{route('permission.index')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Permissions</p>
                 </a>
               </li>
+              @endcan()
+              @role('admin')
               <li class="nav-item">
                 <a href="{{route('role.index')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Roles</p>
                 </a>
               </li>
+              @endrole
               <li class="nav-item">
                 <a href="{{route('user.index')}}" class="nav-link">
                   <i class="far fa-user nav-icon"></i>
@@ -134,6 +138,14 @@
               <i class="nav-icon fas fa-user"></i>
               <p>
                 Profile
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{route('user.change_password')}}" class="nav-link">
+              <i class="nav-icon fas fa-user"></i>
+              <p>
+                Change Password
               </p>
             </a>
           </li>
