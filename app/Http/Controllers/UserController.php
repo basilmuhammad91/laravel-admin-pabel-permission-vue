@@ -222,4 +222,33 @@ class UserController extends Controller
         ]);
     }
 
+    public function delete($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+        return response()->json(["User Deleted", 200]);
+    }
+
+    public function search(Request $req)
+    {
+        $searchWord = $req->search;
+
+        $users = User::where(function($query) use ($searchWord){
+            $query->where('name', 'LIKE', "%$searchWord%")
+            ->orWhere('email', 'LIKE', "%$searchWord%");
+        })->latest()->get();
+
+        $users->transform(function($user){
+            $user->role = $user->getRoleNames()->first();
+            $user->userPermissions = $user->getPermissionNames();
+            return $user;
+        });
+
+        return response()->json([
+            "users" => $users
+        ], 200);
+
+
+    }
+
 }

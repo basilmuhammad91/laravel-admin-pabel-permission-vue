@@ -22,8 +22,8 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::resource('user','UserController');
-Route::resource('permission', 'PermissionController');
-Route::resource('role','RoleController');
+
+
 
 Route::get('/profile', 'UserController@profile')->name('user.profile');
 Route::post('/profile', 'UserController@post_profile')->name('user.postprofile');
@@ -40,3 +40,14 @@ Route::get('getAllRoles', 'RoleController@getAllRoles');
 Route::post('account/create', 'UserController@store');
 Route::put('account/update/{id}', 'UserController@update');
 
+Route::delete('user/delete/{id}', 'UserController@delete');
+Route::get('/search/user', 'UserController@search');
+// =========MIDDLEWARE ROUTES========
+
+Route::group(['middleware' => ['role:admin']], function () {
+    Route::resource('role','RoleController');
+});
+
+Route::group(['middleware' => ['permission:Hamza']], function () {
+    Route::resource('permission', 'PermissionController');
+});

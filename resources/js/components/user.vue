@@ -9,12 +9,13 @@
                 <li class="nav-item mr-1">
                     <button type="button" class="btn btn-sm btn-primary" @click="createMode()"><i class="fas fa-plus-circle"></i> Add New</button>
                 </li>
+
                 <li class="nav-item">
                     <div class="input-group mt-0 input-group-sm" style="width: 350px;">
                         <input type="text" name="table_search" v-model="searchWord" class="form-control float-right" placeholder="Search by name, email">
 
                         <div class="input-group-append">
-                            <button type="submit" class="btn btn-default" ><i class="fas fa-search"></i></button>
+                            <button type="submit" class="btn btn-default" @click="search"><i class="fas fa-search"></i></button>
                         </div>
                     </div>
                 </li>
@@ -170,6 +171,7 @@
     data(){
       return {
         action: '',
+        searchWord: '',
         editMode: false,
         loading: false,
         load: true,
@@ -303,6 +305,50 @@
       viewUser(user){
         $('#viewUser').modal('show');
         this.user = user;
+      },
+
+      deleteUser(user){
+        swal.fire({
+          title: 'Are you sure?',
+          text: user.name+" will be deleted",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+             axios.delete('http://localhost/laravel/admin/public/user/delete/'+user.id)
+              .then((response)=>{
+                swal.fire({
+                  icon: 'success',
+                  title: 'User Deleted !',
+                  text: 'User has been deleted successfully !',
+                });
+
+              }).catch((e)=>{
+                swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: e,
+                })
+              })
+            }
+          })
+      },
+
+      // Search for the user
+      search(){
+          axios.get('http://localhost/laravel/admin/public/search/user?search='+this.searchWord)
+            .then((response)=>{
+              this.users = response.data.users
+            }).catch((e)=>{
+              swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: e,
+                })
+            })
       },
 
     },
