@@ -109,22 +109,22 @@
               </p>
             </a>
             <ul class="nav nav-treeview" style="display: none;">
-              @can('Hamza')
+            @can('Access Permission')
               <li class="nav-item">
                 <a href="{{route('permission.index')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Permissions</p>
                 </a>
               </li>
-              @endcan()
-              @role('admin')
+              @endcan
+              @can('view_roles')
               <li class="nav-item">
                 <a href="{{route('role.index')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Roles</p>
                 </a>
               </li>
-              @endrole
+              @endcan
               <li class="nav-item">
                 <a href="{{route('user.index')}}" class="nav-link">
                   <i class="far fa-user nav-icon"></i>

@@ -17,10 +17,12 @@ class RoleController extends Controller
     {
         $this->role = $role;
         $this->middleware('auth');
+        // $this->middleware('can: view_roles');
     }
 
     public function index()
     {
+        $this->authorize('view_roles');
         $roles = $this->role::all();
         return view('role.index', ['roles' => $roles]);
     }

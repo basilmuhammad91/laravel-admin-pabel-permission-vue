@@ -21,6 +21,7 @@ class PermissionController extends Controller
 
     public function index()
     {
+        $this->authorize('Access Permission');
         $permissions = $this->permission::all();
         return view('permission.index', ['permissions' => $permissions]);
     }

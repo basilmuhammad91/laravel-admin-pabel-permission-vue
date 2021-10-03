@@ -210,7 +210,8 @@
       // Get all the users to show in table
       getUsers(){
         this.loading = true;
-        axios.get('http://localhost/laravel/admin/public/getAllUsers')
+        // axios.get('http://localhost/laravel/admin/public/getAllUsers')
+        axios.get('http://localhost/laravel/admin/public/api/users')
         .then((response)=>{   
           this.loading = false;
           this.users = response.data.users

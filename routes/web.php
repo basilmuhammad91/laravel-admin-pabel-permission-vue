@@ -44,10 +44,13 @@ Route::delete('user/delete/{id}', 'UserController@delete');
 Route::get('/search/user', 'UserController@search');
 // =========MIDDLEWARE ROUTES========
 
-Route::group(['middleware' => ['role:admin']], function () {
-    Route::resource('role','RoleController');
-});
+Route::resource('role','RoleController');
+Route::resource('permission', 'PermissionController');
 
-Route::group(['middleware' => ['permission:Hamza']], function () {
-    Route::resource('permission', 'PermissionController');
-});
+// Route::group(['middleware' => ['role:admin']], function () {
+//     Route::resource('role','RoleController');
+// });
+
+// Route::group(['middleware' => ['permission:Hamza']], function () {
+//     Route::resource('permission', 'PermissionController');
+// });

@@ -58,11 +58,11 @@ class UserController extends Controller
         $user->password = bcrypt($request->password);
         $user->email = $request->email;
         $user->assignRole($request->role);
-
-        if($request->has("permissions"))
-        {
-            $user->givePermissionTo($request->permissions);
-        }
+        $user->getPermissionsViaRoles();
+        // if($request->has("permissions"))
+        // {
+        //     $user->givePermissionTo($request->permissions);
+        // }
 
         $user->save();
 
@@ -140,7 +140,8 @@ class UserController extends Controller
 
             
         }
-        $user->givePermissionTo($request->permissions);
+        // $user->givePermissionTo($request->permissions);
+        $user->getPermissionsViaRoles();
 
         $user->save();
         return response()->json([
@@ -188,6 +189,7 @@ class UserController extends Controller
 
     public function getAllUsers()
     {
+        // $this->authorize('view_roles');
         $users = User::latest()->get();
         
         $users->transform(function($user){
