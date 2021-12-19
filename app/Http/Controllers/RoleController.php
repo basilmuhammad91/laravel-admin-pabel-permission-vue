@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use App\Models\Organization;
 
 class RoleController extends Controller
 {
@@ -22,7 +23,7 @@ class RoleController extends Controller
 
     public function index()
     {
-        $this->authorize('view_roles');
+        // $this->authorize('view_roles');
         $roles = $this->role::all();
         return view('role.index', ['roles' => $roles]);
     }
@@ -45,18 +46,31 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            "name" =>"required"
-        ]);
-        
-        $role = $this->role->create([
-            "name" =>$request->name
-        ]);
+        // return $request->permissions;
+        // $this->validate($request, [
+        //     "name" =>"required"
+        // ]);
 
-        if($request->has('permissions'))
-        {
-            $role->givePermissionTo($request->permissions);
-        }
+        // $role = $this->role->create([
+        //     "name" =>$request->name
+        // ]);
+
+        // if($request->has('permissions'))
+        // {
+        //     // $role->givePermissionTo($request->permissions);
+        //     $permissionIds = [];
+        //     // foreach($request->permissions as $permission)
+        //     // {
+        //     //     $permissionIds = $permission->id;
+        //     // }
+
+        //     $role->permissions()->sync([1,2,3]);
+        // }
+
+        $org = Organization::first();
+        $org->permissions()->sync([3,2,5]);
+
+        return $org->permissions;
 
         return response()->json("Role Created", 200);
 

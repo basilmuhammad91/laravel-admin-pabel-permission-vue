@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Auth;
 use Validator;
 use App\Models\User;
+use App\Models\Organization;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -18,7 +21,7 @@ class UserController extends Controller
     public function __construct(User $user)
     {
         $this->user = $user;
-        $this->middleware('auth');
+        $this->middleware(['auth', 'can:access_org']);
     }
 
     public function index()
@@ -138,7 +141,7 @@ class UserController extends Controller
                 $user->revokePermissionTo($permission);
             }
 
-            
+
         }
         // $user->givePermissionTo($request->permissions);
         $user->getPermissionsViaRoles();
@@ -175,7 +178,7 @@ class UserController extends Controller
         //     "email" => "required|email|unique:users,email|"
         // ]);
 
-     
+
         $user->update($req->all());
 
         if($user->update($req->all()))
@@ -191,7 +194,7 @@ class UserController extends Controller
     {
         // $this->authorize('view_roles');
         $users = User::latest()->get();
-        
+
         $users->transform(function($user){
             $user->role = $user->getRoleNames()->first();
             $user->userPermissions = $user->getPermissionNames();
@@ -251,6 +254,42 @@ class UserController extends Controller
         ], 200);
 
 
+    }
+
+    public function getOrgPermissions()
+    {
+        // $this->authorize('users');
+        // return auth()->user()->can('Create Permission');
+        // if(auth()->user()->can('create_user'))
+        // {
+        //     return "authorize";
+        // }
+        // else
+        // {
+        //     return "unauthorized";
+        // }
+        // return $this->authorize('access_org');
+        // return auth()->user()->organization->can('create_user');
+
+        return auth()->user();
+        // return auth()->user()->organization->can('edit_user');
+        if(auth()->user()->can('create_user') && auth()->user()->organization->can('create_user'))
+        {
+            return "Authorize";
+        }
+        else
+        {
+            return "Unauthorized";
+        }
+
+        $role = Role::where('id', 1)->first();
+        $permission = Permission::where('id', 2)->first();
+        $organization = Organization::first();
+        return $organization->givePermissionTo($permission);
+        // return $role->givePermissionTo($permission);
+
+        $organization = Organization::with('permissions')->get();
+        return $organization;
     }
 
 }

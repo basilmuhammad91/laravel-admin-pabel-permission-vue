@@ -3,6 +3,7 @@
       <div class="card-header">
         <h3 class="card-title">User Table</h3>
 
+    {{ permissions }}
 
         <div class="card-tools">
             <ul class="nav nav-pills ml-auto">
@@ -38,7 +39,7 @@
             </tr>
           </thead>
           <tbody>
-            
+
             <tr v-for="user in users" :key="user.id">
               <td>{{user.id}}</td>
               <td>{{user.name}}</td>
@@ -51,7 +52,7 @@
                 <button class="btn btn-sm btn-danger" @click="deleteUser(user)"> <i class="fa fa-trash"></i> Delete </button>
               </td>
             </tr>
-            
+
           </tbody>
         </table>
       </div>
@@ -145,7 +146,7 @@
 
                     </div>
                     <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <b-button variant="primary" v-if="!load" disabled>
                           <b-spinner small type="grow"></b-spinner>
                           {{ action }}
@@ -166,7 +167,7 @@
 </template>
 
 <script type="text/javascript">
-  
+
   export default{
     data(){
       return {
@@ -210,9 +211,9 @@
       // Get all the users to show in table
       getUsers(){
         this.loading = true;
-        // axios.get('http://localhost/laravel/admin/public/getAllUsers')
-        axios.get('http://localhost/laravel/admin/public/api/users')
-        .then((response)=>{   
+        // axios.get('getAllUsers')
+        axios.get('getAllUsers')
+        .then((response)=>{
           this.loading = false;
           this.users = response.data.users
         }).catch((e)=>{
@@ -226,7 +227,7 @@
       },
       // Get roles to show in dropdown
       getRoles(){
-        axios.get('http://localhost/laravel/admin/public/getAllRoles')
+        axios.get('getAllRoles')
         .then((response)=>{
           this.roles = response.data.roles
         }).catch((e)=>{
@@ -239,9 +240,17 @@
       },
       // Get permissions to show in checboxes
       getPermissions(){
-        axios.get('http://localhost/laravel/admin/public/getAllPermission')
+        axios.get('api/getOrgPermissions')
+        // axios.get('getAllPermission')
         .then((response)=>{
-          this.permissions = response.data.permissions
+          this.permissions = response.data
+        //   console.log(response.data);
+        response.data.organization.permissions.map(val => {
+            if(val.name == 'create_user')
+            {
+                console.log('Authorize');
+            }
+        });
         }).catch((e)=>{
             swal.fire({
               icon: 'error',
@@ -254,7 +263,7 @@
       createUser(){
         this.action = 'Creating User...';
         this.load = false;
-        this.form.post('http://localhost/laravel/admin/public/account/create')
+        this.form.post('/account/create')
         .then((response)=>{
           this.load = true;
           Fire.$emit('loadUser');
@@ -265,7 +274,7 @@
               text: 'Your account has been created successfully',
             });
           this.form.reset();
-          // window.location = 'http://localhost/laravel/admin/public/user';
+          // window.location = 'user';
         }).catch((e)=>{
           this.load = true;
           swal.fire({
@@ -275,12 +284,12 @@
             })
         })
       },
-      
+
       // Update the user
       updateUser(){
         this.action = 'Updating User...';
         this.load = false;
-        this.form.put('http://localhost/laravel/admin/public/account/update/'+this.form.id)
+        this.form.put('/account/update/'+this.form.id)
         .then((response)=>{
           this.load = true;
           Fire.$emit('loadUser');
@@ -291,7 +300,7 @@
               text: 'Your account has been updated successfully',
             });
           this.form.reset();
-          window.location = 'http://localhost/laravel/admin/public/user';
+          window.location = '/user';
         }).catch((e)=>{
           this.load = true;
           swal.fire({
@@ -319,7 +328,7 @@
           confirmButtonText: 'Yes, delete it!'
           }).then((result) => {
             if (result.isConfirmed) {
-             axios.delete('http://localhost/laravel/admin/public/user/delete/'+user.id)
+             axios.delete('user/delete/'+user.id)
               .then((response)=>{
                 swal.fire({
                   icon: 'success',
@@ -340,7 +349,7 @@
 
       // Search for the user
       search(){
-          axios.get('http://localhost/laravel/admin/public/search/user?search='+this.searchWord)
+          axios.get('search/user?search='+this.searchWord)
             .then((response)=>{
               this.users = response.data.users
             }).catch((e)=>{

@@ -49,7 +49,7 @@ export default{
 
 	methods: {
 		getPermissions(){
-			axios.get('http://localhost/laravel/admin/public/getAllPermission')
+			axios.get('http://localhost/laravel-admin-panel-permission-vue/public/getAllPermission')
 			.then((response)=>{
 				this.permissions = response.data.permissions
 			}).catch((e)=>{
@@ -63,13 +63,13 @@ export default{
 
 		createRole(){
 			this.dis = false;
-			this.form.post('http://localhost/laravel/admin/public/postRole').then(()=>{
+			this.form.post('http://localhost/laravel-admin-panel-permission-vue/public/postRole').then(()=>{
 				swal.fire({
 					  icon: 'success',
 					  title: 'Role Created',
 					  text: "Your role has been created successfully..",
 					})
-				window.location = 'http://localhost/laravel/admin/public/role';
+				// window.location = '/role';
 			}).catch((e)=>{
 				swal.fire({
 					  icon: 'error',
@@ -77,7 +77,7 @@ export default{
 					  text: e,
 					})
 			});
-			// axios.post('http://localhost/laravel/admin/public/postRole', formData)
+			// axios.post('/postRole', formData)
 			// .then((response)=>{
 
 			// })

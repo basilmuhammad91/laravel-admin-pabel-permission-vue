@@ -20,3 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/users', 'API\UserController@index');
 Route::post('/login', 'API\AuthController@login');
+
+Route::get('/getOrgPermissions', 'UserController@getOrgPermissions');
