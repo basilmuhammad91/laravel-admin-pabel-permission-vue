@@ -53,6 +53,9 @@ window.Form = Form;
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
 
+import Access from './access';
+Vue.prototype.$access=new Access(window.orgPermission);
+
 const app = new Vue({
     el: '#app',
 });

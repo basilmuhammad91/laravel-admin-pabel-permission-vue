@@ -59,7 +59,7 @@
                     </form>
                 </li>
             </ul>
-   
+
   </nav>
   <!-- /.navbar -->
 
@@ -186,3 +186,10 @@
 <div id="sidebar-overlay"></div></div>
 </body>
 </html>
+
+
+@auth
+    <script>
+        window.orgPermission = "{{ Auth::user()->organization->permissions }}";
+    </script>
+@endauth

@@ -244,13 +244,15 @@
         // axios.get('getAllPermission')
         .then((response)=>{
           this.permissions = response.data
-        //   console.log(response.data);
-        response.data.organization.permissions.map(val => {
-            if(val.name == 'create_user')
-            {
-                console.log('Authorize');
-            }
-        });
+        if(this.$access.can('edit_user'))
+        {
+            console.log('Authorize');
+        }
+        else
+        {
+            console.log('Unauthorize');
+        }
+        // console.log(this.$access.can('create_user'));
         }).catch((e)=>{
             swal.fire({
               icon: 'error',

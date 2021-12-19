@@ -70,7 +70,6 @@ class UserController extends Controller
         $user->save();
 
         return response()->json("User Created", 200);
-
     }
 
     /**
@@ -117,31 +116,24 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->phone = $request->phone;
 
-        if($request->has('password'))
-        {
+        if ($request->has('password')) {
             $user->password = bcrypt($request->password);
         }
 
-        if($request->has('role'))
-        {
+        if ($request->has('role')) {
             $userRole = $user->getRoleNames();
-            foreach($userRole as $role)
-            {
+            foreach ($userRole as $role) {
                 $user->removeRole($role);
             }
 
             $user->assignRole($request->role);
         }
 
-        if($request->has('permissions'))
-        {
+        if ($request->has('permissions')) {
             $userPermissions = $user->getPermissionNames();
-            foreach ($userPermissions as $permission)
-            {
+            foreach ($userPermissions as $permission) {
                 $user->revokePermissionTo($permission);
             }
-
-
         }
         // $user->givePermissionTo($request->permissions);
         $user->getPermissionsViaRoles();
@@ -150,7 +142,6 @@ class UserController extends Controller
         return response()->json([
             "User Updated", 200
         ]);
-
     }
 
     /**
@@ -181,13 +172,10 @@ class UserController extends Controller
 
         $user->update($req->all());
 
-        if($user->update($req->all()))
-        {
+        if ($user->update($req->all())) {
             return redirect()->back()
-            ->with('success','Profile Successfully Updated !')
-            ;
+                ->with('success', 'Profile Successfully Updated !');
         }
-
     }
 
     public function getAllUsers()
@@ -195,7 +183,7 @@ class UserController extends Controller
         // $this->authorize('view_roles');
         $users = User::latest()->get();
 
-        $users->transform(function($user){
+        $users->transform(function ($user) {
             $user->role = $user->getRoleNames()->first();
             $user->userPermissions = $user->getPermissionNames();
             return $user;
@@ -238,12 +226,12 @@ class UserController extends Controller
     {
         $searchWord = $req->search;
 
-        $users = User::where(function($query) use ($searchWord){
+        $users = User::where(function ($query) use ($searchWord) {
             $query->where('name', 'LIKE', "%$searchWord%")
-            ->orWhere('email', 'LIKE', "%$searchWord%");
+                ->orWhere('email', 'LIKE', "%$searchWord%");
         })->latest()->get();
 
-        $users->transform(function($user){
+        $users->transform(function ($user) {
             $user->role = $user->getRoleNames()->first();
             $user->userPermissions = $user->getPermissionNames();
             return $user;
@@ -252,8 +240,6 @@ class UserController extends Controller
         return response()->json([
             "users" => $users
         ], 200);
-
-
     }
 
     public function getOrgPermissions()
@@ -273,12 +259,9 @@ class UserController extends Controller
 
         return auth()->user();
         // return auth()->user()->organization->can('edit_user');
-        if(auth()->user()->can('create_user') && auth()->user()->organization->can('create_user'))
-        {
+        if (auth()->user()->can('create_user') && auth()->user()->organization->can('create_user')) {
             return "Authorize";
-        }
-        else
-        {
+        } else {
             return "Unauthorized";
         }
 
@@ -291,5 +274,4 @@ class UserController extends Controller
         $organization = Organization::with('permissions')->get();
         return $organization;
     }
-
 }
